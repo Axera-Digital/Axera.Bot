@@ -3,8 +3,11 @@ Axera.Bot is a fully-featured Discord bot written in Python. It is designed to b
 
 ## Features
 * Server Moderation
-* Entertainment
+* Music
+* Games
+* Memes
 * Server Utilities
+* Much More!
 
 ## Preview
 <details>
