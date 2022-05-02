@@ -1,5 +1,7 @@
 import asyncio
 import datetime
+import os
+import sys
 import hikari
 import lightbulb
 
@@ -12,6 +14,7 @@ admin_plugin = lightbulb.Plugin("Admin")
 async def admin():
 	pass
 
+#get a user's Discord information
 @admin.command
 @lightbulb.add_checks(lightbulb.checks.has_role_permissions(hikari.Permissions.ADMINISTRATOR))
 @lightbulb.option("target", "The member to get information about. Leave blank for your info.", hikari.User, required=False)
@@ -71,7 +74,7 @@ async def userinfo(ctx: lightbulb.Context):
 @lightbulb.option("user", "The user to ban.", type=hikari.User)
 @lightbulb.command("ban", "Ban a user from the server.")
 @lightbulb.implements(lightbulb.SlashSubCommand)
-async def ban(ctx):
+async def ban(ctx: lightbulb.Slashcontext):
     if not ctx.guild_id:
         await ctx.respond("This command can only be used in a server.")
         return
@@ -85,17 +88,13 @@ async def ban(ctx):
 
 #purge the channel
 @admin.command
+@lightbulb.add_checks(lightbulb.checks.has_role_permissions(hikari.Permissions.ADMINISTRATOR))
 @lightbulb.option("messages", "The number of messages to purge.", type=int, required=True)
 @lightbulb.command("purge", "Purge messages.", aliases=["clear"])
 @lightbulb.implements(lightbulb.SlashSubCommand)
 async def purge_messages(ctx: lightbulb.Context):
     num_msgs = ctx.options.messages
     channel = ctx.channel_id
-
-    # If the command was invoked using the PrefixCommand, it will create a message
-    # before we purge the messages, so you want to delete this message first
-    if isinstance(ctx, lightbulb.PrefixContext):
-        await ctx.event.message.delete()
 
     msgs = await ctx.bot.rest.fetch_messages(channel).limit(num_msgs)
     await ctx.bot.rest.delete_messages(channel, msgs)
@@ -105,6 +104,27 @@ async def purge_messages(ctx: lightbulb.Context):
     await asyncio.sleep(5)
     await resp.delete()
 
+#shutdown the bot
+@admin.command
+@lightbulb.add_checks(lightbulb.checks.has_role_permissions(hikari.Permissions.ADMINISTRATOR))
+@lightbulb.command("shutdown", "Shut the bot down.", ephemeral=True)
+@lightbulb.implements(lightbulb.SlashSubCommand)
+async def cmd_shutdown(ctx: lightbulb.SlashContext):
+    await ctx.respond("Now shutting down...")
+    await ctx.bot.close()
+
+
+#shutdown the bot
+def restart_bot(): 
+  os.execv(sys.executable, ['python'] + sys.argv)
+
+@admin.command
+@lightbulb.add_checks(lightbulb.checks.has_role_permissions(hikari.Permissions.ADMINISTRATOR))
+@lightbulb.command("restart", "Restart the bot.", ephemeral=True)
+@lightbulb.implements(lightbulb.SlashSubCommand)
+async def restart(ctx: lightbulb.SlashContext):
+  await ctx.respond("Restarting the bot...")
+  restart_bot()
 
 def load(bot: lightbulb.BotApp):
     bot.add_plugin(admin_plugin)

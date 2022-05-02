@@ -51,8 +51,8 @@ ANIMALS = {
 
 @entertainment.child
 @lightbulb.command("animal_fact", "Get a fact + picture of a cute animal :3")
-@lightbulb.implements(lightbulb.PrefixSubCommand)
-async def animal_subcommand(ctx: lightbulb.Context):
+@lightbulb.implements(lightbulb.SlashSubCommand)
+async def animal_facts(ctx: lightbulb.Context):
     select_menu = (
         ctx.bot.rest.build_action_row()
         .add_select_menu("animal_select")
