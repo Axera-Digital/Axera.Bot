@@ -23,55 +23,6 @@ async def on_started(evemt):
 	print('Bot has come online!')
 
 
-"""   Utility Commands  """
-
-#implement a slash command group // they can't do anything so we just pass it // use it for organizing commands
-@bot.command
-@lightbulb.command('utils', 'Commands that deal with general server maintenance')
-@lightbulb.implements(lightbulb.SlashCommandGroup)
-async def utils():
-	pass
-
-#Delete X amount of messages from a channel. Limited to messages < 14 days old by Discord.
-@utils.command
-@lightbulb.option('amount', 'How many messages do you want deleted?', type=int, require=True, minimum=1)
-@lightbulb.command('purge', 'Purge the channel of a set number of messages.')
-@lightbulb.implements(lightbulb.SlashSubCommand)
-async def purge(ctx):
-    #query the channel that the command was called from for X messages < 14 days old
-    messages = (
-        await ctx.app.rest.fetch_messages(ctx.channel_id)
-        .take_until(lambda m: datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=14) > m.created_at)
-        .limit({ctx.options.amount})
-    )
-
-    #if we have messages to delete, delete them and send a message with how many we purged
-    if messages:
-        await ctx.app.rest.delete_messages(ctx.channel_id, messages)
-        await ctx.interaction.create_initial_response(
-            hikari.ResponseType.MESSAGE_CREATE,
-            f"Purged {len(messages)} messages.",
-            flags=hikari.MessageFlag.EPHEMERAL,
-        )
-    else:
-    #if there aren't any messages to delete, say so
-        await ctx.interaction.create_initial_response(
-            hikari.ResponseType.MESSAGE_CREATE,
-            "Couldn\'t find any deletable messages.",
-            flags=hikari.MessageFlag.EPHEMERAL,
-        )
-
-
-"""   Music Commands   """
-
-#implement a slash command group // they can't do anything so we just pass it // use it for organizing commands
-@bot.command
-@lightbulb.command('music', 'Commands that deal with music')
-@lightbulb.implements(lightbulb.SlashCommandGroup)
-async def music():
-	pass
-
-
 """    Bot Control Commands   """
 
 #implement a slash command group // they can't do anything so we just pass it // use it for organizing commands
@@ -88,8 +39,6 @@ async def bot():
 async def cmd_shutdown(ctx: lightbulb.SlashContext):
     await ctx.respond("Now shutting down.")
     await ctx.bot.close()
-
-
 
 bot.run(
     activity=hikari.Activity(
