@@ -71,7 +71,7 @@ async def admin():
 
 #ban a user from the Discord server
 @admin.command
-@lightbulb.add_checks(lightbulb.checks.has_roles(953091979745574942))
+@lightbulb.add_checks(lightbulb.checks.has_role_permissions(hikari.Permissions.ADMINISTRATOR))
 @lightbulb.option("reason", "Reason for the ban", required=False)
 @lightbulb.option("user", "The user to ban.", type=hikari.User)
 @lightbulb.command("ban", "Ban a user from the server.")
@@ -97,4 +97,3 @@ async def ban(ctx):
 @lightbulb.implements(lightbulb.SlashCommandGroup)
 async def entertainment():
 	pass
-    
