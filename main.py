@@ -8,11 +8,13 @@ from pkg_resources import require
 load_dotenv()
 
 #set the instance of the bot
-
 bot = lightbulb.BotApp(
 	token=os.getenv('TOKEN'), # pull the toekn from the .env files
 	default_enabled_guilds=(586275458518351875), #bypass 1 hour wait time to update commands
 )
+
+#load our extensiosn
+bot.load_extensions_from("./extensions/", must_exist=True)
 
 #let's us known when the bot has fired up
 #Hikari already has a nice console GUI that does this but it helps to know when your code starts
@@ -60,40 +62,38 @@ async def purge(ctx):
         )
 
 
-"""   Admin Commands   """
+"""   Music Commands   """
 
 #implement a slash command group // they can't do anything so we just pass it // use it for organizing commands
 @bot.command
-@lightbulb.command('admin', 'Commands that deal with all things administrative')
+@lightbulb.command('music', 'Commands that deal with music')
 @lightbulb.implements(lightbulb.SlashCommandGroup)
-async def admin():
+async def music():
 	pass
 
-#ban a user from the Discord server
-@admin.command
-@lightbulb.add_checks(lightbulb.checks.has_role_permissions(hikari.Permissions.ADMINISTRATOR))
-@lightbulb.option("reason", "Reason for the ban", required=False)
-@lightbulb.option("user", "The user to ban.", type=hikari.User)
-@lightbulb.command("ban", "Ban a user from the server.")
+
+"""    Bot Control Commands   """
+
+#implement a slash command group // they can't do anything so we just pass it // use it for organizing commands
+@bot.command
+@lightbulb.command('bot', 'Commands that deal with controlling the bot (admin only)')
+@lightbulb.implements(lightbulb.SlashCommandGroup)
+async def bot():
+	pass
+
+@bot.command
+@lightbulb.add_checks()
+@lightbulb.command("shutdown", "Shut the bot down.", ephemeral=True)
 @lightbulb.implements(lightbulb.SlashSubCommand)
-async def ban(ctx):
-    if not ctx.guild_id:
-        await ctx.respond("This command can only be used in a server.")
-        return
-
-    # create a deferred response as the ban may take longer than 3 seconds
-    await ctx.respond(hikari.ResponseType.DEFERRED_MESSAGE_CREATE)
-    # perform the ban
-    await ctx.app.rest.ban_user(ctx.guild_id, ctx.options.user.id, reason=ctx.options.reason or hikari.UNDEFINED)
-    # provide feedback to the server
-    await ctx.respond(f"{ctx.options.user.mention} got the ban hammer.\n**Reason:** {ctx.options.reason or 'None provided.'}")
+async def cmd_shutdown(ctx: lightbulb.SlashContext):
+    await ctx.respond("Now shutting down.")
+    await ctx.bot.close()
 
 
-"""   Entertainment Commands   """
 
-#implement a slash command group // they can't do anything so we just pass it // use it for organizing commands
-@bot.command
-@lightbulb.command('entertainment', 'Commands that deal with music, games, and other fun things')
-@lightbulb.implements(lightbulb.SlashCommandGroup)
-async def entertainment():
-	pass
+bot.run(
+    activity=hikari.Activity(
+            name="your commands • Use /help",
+            type=hikari.ActivityType.LISTENING,
+        )
+    )
