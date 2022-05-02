@@ -15,7 +15,7 @@ async def admin():
 	pass
 
 #get a user's Discord information
-@admin.command
+@admin.child
 @lightbulb.add_checks(lightbulb.checks.has_role_permissions(hikari.Permissions.ADMINISTRATOR))
 @lightbulb.option("target", "The member to get information about. Leave blank for your info.", hikari.User, required=False)
 @lightbulb.command("whois", "Get info on a server member.")
@@ -68,13 +68,13 @@ async def userinfo(ctx: lightbulb.Context):
     await ctx.respond(embed)
 
 #ban a user from the Discord server
-@admin.command
+@admin.child
 @lightbulb.add_checks(lightbulb.checks.has_role_permissions(hikari.Permissions.ADMINISTRATOR))
 @lightbulb.option("reason", "Reason for the ban", required=False)
 @lightbulb.option("user", "The user to ban.", type=hikari.User)
 @lightbulb.command("ban", "Ban a user from the server.")
 @lightbulb.implements(lightbulb.SlashSubCommand)
-async def ban(ctx: lightbulb.Slashcontext):
+async def ban(ctx: lightbulb.SlashContext):
     if not ctx.guild_id:
         await ctx.respond("This command can only be used in a server.")
         return
@@ -87,12 +87,12 @@ async def ban(ctx: lightbulb.Slashcontext):
     await ctx.respond(f"{ctx.options.user.mention} got the ban hammer!\n**Reason:** {ctx.options.reason or 'None provided.'}")
 
 #purge the channel
-@admin.command
+@admin.child
 @lightbulb.add_checks(lightbulb.checks.has_role_permissions(hikari.Permissions.ADMINISTRATOR))
 @lightbulb.option("messages", "The number of messages to purge.", type=int, required=True)
 @lightbulb.command("purge", "Purge messages.", aliases=["clear"])
 @lightbulb.implements(lightbulb.SlashSubCommand)
-async def purge_messages(ctx: lightbulb.Context):
+async def purge_messages(ctx: lightbulb.SlashContext):
     num_msgs = ctx.options.messages
     channel = ctx.channel_id
 
@@ -105,7 +105,7 @@ async def purge_messages(ctx: lightbulb.Context):
     await resp.delete()
 
 #shutdown the bot
-@admin.command
+@admin.child
 @lightbulb.add_checks(lightbulb.checks.has_role_permissions(hikari.Permissions.ADMINISTRATOR))
 @lightbulb.command("shutdown", "Shut the bot down.", ephemeral=True)
 @lightbulb.implements(lightbulb.SlashSubCommand)
@@ -118,7 +118,7 @@ async def cmd_shutdown(ctx: lightbulb.SlashContext):
 def restart_bot(): 
   os.execv(sys.executable, ['python'] + sys.argv)
 
-@admin.command
+@admin.child
 @lightbulb.add_checks(lightbulb.checks.has_role_permissions(hikari.Permissions.ADMINISTRATOR))
 @lightbulb.command("restart", "Restart the bot.", ephemeral=True)
 @lightbulb.implements(lightbulb.SlashSubCommand)

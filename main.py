@@ -22,24 +22,6 @@ bot.load_extensions_from("./extensions/", must_exist=True)
 async def on_started(evemt):
 	print('Bot has come online!')
 
-
-"""    Bot Control Commands   """
-
-#implement a slash command group // they can't do anything so we just pass it // use it for organizing commands
-@bot.command
-@lightbulb.command('bot', 'Commands that deal with controlling the bot (admin only)')
-@lightbulb.implements(lightbulb.SlashCommandGroup)
-async def bot():
-	pass
-
-@bot.command
-@lightbulb.add_checks()
-@lightbulb.command("shutdown", "Shut the bot down.", ephemeral=True)
-@lightbulb.implements(lightbulb.SlashSubCommand)
-async def cmd_shutdown(ctx: lightbulb.SlashContext):
-    await ctx.respond("Now shutting down.")
-    await ctx.bot.close()
-
 bot.run(
     activity=hikari.Activity(
             name="your commands • Use /help",
