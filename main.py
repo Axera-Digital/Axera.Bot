@@ -10,7 +10,7 @@ load_dotenv()
 #set the instance of the bot
 bot = lightbulb.BotApp(
 	token=os.getenv('TOKEN'), # pull the toekn from the .env files
-	default_enabled_guilds=(586275458518351875), #bypass 1 hour wait time to update commands
+	default_enabled_guilds=(#YOUR GUILD ID HERE#), #bypass 1 hour wait time to update commands
 )
 
 #load our extensiosn
